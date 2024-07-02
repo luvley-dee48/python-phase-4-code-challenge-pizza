@@ -22,7 +22,7 @@ class TestApp:
             response = app.test_client().get('/restaurants')
             assert response.status_code == 200
             assert response.content_type == 'application/json'
-            response = response.json
+            response = response.json['restaurants']
             assert [restaurant['id'] for restaurant in response] == [
                 restaurant.id for restaurant in restaurants]
             assert [restaurant['name'] for restaurant in response] == [
@@ -83,7 +83,7 @@ class TestApp:
         '''returns an error message and 404 status code with DELETE request to /restaurants/<int:id> by a non-existent ID.'''
 
         with app.app_context():
-            response = app.test_client().get('/restaurants/0')
+            response = app.test_client().delete('/restaurants/0')
             assert response.status_code == 404
             assert response.json.get('error') == "Restaurant not found"
 
@@ -153,7 +153,7 @@ class TestApp:
             query_result = RestaurantPizza.query.filter(
                 RestaurantPizza.restaurant_id == restaurant.id, RestaurantPizza.pizza_id == pizza.id).first()
             assert query_result.price == 3
-
+            
     def test_400_for_validation_error(self):
         '''returns a 400 status code and error message if a POST request to /restaurant_pizzas fails.'''
 
